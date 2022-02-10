@@ -1,4 +1,4 @@
-package go_mastermind
+package lib
 
 import (
 	"github.com/stretchr/testify/assert"
