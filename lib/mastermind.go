@@ -2,10 +2,11 @@ package lib
 
 import (
 	"math/rand"
+	"regexp"
 	"time"
 )
 
-func Generate() (numberArray [4]byte) {
+func Generate() string {
 	rand.Seed(time.Now().Unix())
 
 	numbers := []byte("1234567890")
@@ -20,9 +21,7 @@ func Generate() (numberArray [4]byte) {
 	}
 	end := start + 4
 
-	copy(numberArray[:], numbers[start:end])
-
-	return
+	return string(numbers[start:end])
 
 }
 
@@ -31,7 +30,7 @@ func Generate() (numberArray [4]byte) {
 // Returns how many `goodGuesses` there were (right digit, right position), and how many "regular" guesses there were:
 // (right digit, wrong position). When real=guess, goodGuesses -> 4 regularGuesses -> 0
 //
-func CheckGuess(real, guess [4]byte) (goodGuesses uint, regularGuesses uint) {
+func CheckGuess(real, guess string) (goodGuesses uint, regularGuesses uint) {
 
 	regularGuesses = 0
 	goodGuesses = 0
@@ -40,19 +39,34 @@ func CheckGuess(real, guess [4]byte) (goodGuesses uint, regularGuesses uint) {
 		if real[i] == guess[i] {
 			goodGuesses++
 			continue
-		} else {
-			for j := 0; j < 4; j++ {
-				if j == i {
-					continue
-				}
-				if guess[i] == real[j] {
-					regularGuesses++
-					continue
-				}
-			}
+		}
+
+		if guess[i] == real[0] || guess[i] == real[1] || guess[i] == real[2] || guess[i] == real[3] {
+			regularGuesses++
 		}
 	}
 
 	return
+}
 
+// Validate Checks that the received string is a valid MasterMind™️ number
+//
+// The `guess` needs to be 4 unique digits long, and should not start with 0.
+func Validate(guess string) bool {
+	if match, _ := regexp.MatchString(`^\d{4}$`, guess); !match {
+		return false
+	}
+	if string(guess[0]) == "0" {
+		return false
+	}
+
+	for pos, char := range guess {
+		for j := pos + 1; j < 4; j++ {
+			if string(char) == string(guess[j]) {
+				return false
+			}
+		}
+	}
+
+	return true
 }

@@ -6,9 +6,9 @@ import (
 )
 
 func TestUniqueDigits(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 200; i++ {
 		number := Generate()
-		assert.Regexp(t, `^\d{4}$`, number, "Does not match 4 digits, apparently")
+		assert.Regexp(t, `^[1-9]\d{3}$`, number, "Does not match 4 digits, apparently")
 		for pos, char := range number {
 			for j := pos + 1; j < 4; j++ {
 				assert.NotEqual(t, string(char), string(number[j]))
