@@ -7,9 +7,14 @@ import (
 	"strings"
 )
 
+var config lib.Config
+var container lib.Container
+
 func main() {
 
-	container := lib.Container{}
+	config.Init(false)
+	container.Config = &config
+
 	gameRepository := container.GetGameRepository()
 
 	var game lib.Game
