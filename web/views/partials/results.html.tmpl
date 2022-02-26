@@ -1,0 +1,9 @@
+{{ define "guessOutput" }}
+<div id="guessing-results">
+    {{ range .Guesses }}
+    <p>{{ .GuessNumber }} {{ .GoodGuesses }}🟢 {{ .RegularGuesses }}🟡 </p>
+    {{ else }}
+    <p class="no-results">Haven't started playing yet</p>
+    {{ end }}
+</div>
+{{ end }}

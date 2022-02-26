@@ -1,0 +1,8 @@
+{{ define "body" }}
+    <turbo-frame id="guessInput">
+        {{ block "guessInput" .}}{{ end }}
+    </turbo-frame>
+    <turbo-frame id="guessOutput">
+        {{ block "guessOutput" .}}{{ end }}
+    </turbo-frame>
+{{ end }}

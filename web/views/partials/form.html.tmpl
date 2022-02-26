@@ -1,0 +1,10 @@
+{{ define "guessInput" }}
+<div id="guess-input">
+  <form>
+    <input aria-label="Your Guess" id="guess" type="text" name="guess" size="4" maxlength="4" placeholder="1234"/>
+    <input type="hidden" name="gid" value="{{ .GameId }}">
+    <input type="hidden" name="trn" value="{{ .GuessCount }}">
+    <button type="submit">Guess!</button>
+  </form>
+</div>
+{{ end }}
