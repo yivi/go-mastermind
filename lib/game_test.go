@@ -7,7 +7,8 @@ import (
 
 func TestUniqueDigits(t *testing.T) {
 	for i := 0; i < 200; i++ {
-		number := Generate()
+		game := NewGame()
+		number := game.Number
 		assert.Regexp(t, `^[1-9]\d{3}$`, number, "Does not match 4 digits, apparently")
 		for pos, char := range number {
 			for j := pos + 1; j < 4; j++ {

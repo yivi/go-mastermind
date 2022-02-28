@@ -14,7 +14,7 @@ type Config struct {
 	WebPort int
 }
 
-func (config *Config) Init(requireLoadingFile bool) {
+func (config *Config) Initialize(requireLoadingFile bool) {
 	viper.SetDefault("db_host", "localhost")
 	viper.SetDefault("db_port", 12790)
 	viper.SetDefault("db_user", "superuser")
@@ -37,11 +37,4 @@ func (config *Config) Init(requireLoadingFile bool) {
 	config.DbPort = viper.Get("db_port").(int)
 
 	config.WebPort = viper.Get("web_port").(int)
-
-	//config.DbHost = fmt.Sprint(viper.Get("db_host"))
-	//config.DbName = fmt.Sprint(viper.Get("db_name"))
-	//config.DbUser = fmt.Sprint(viper.Get("db_user"))
-	//config.DbPass = fmt.Sprint(viper.Get("db_pass"))
-	//config.DbPort = fmt.Sprint(viper.Get("db_pass"))
-
 }

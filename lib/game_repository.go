@@ -46,7 +46,7 @@ func (r *GameRepository) AddGame(game *Game) error {
 	getGameErr := r.GetGameById(&Game{}, game.Id)
 
 	if getGameErr != nil {
-		sql = "INSERT INTO games (id, number, created_at, updated_at, won, finished) VALUES (:id, :number, :createdAt, :updatedAt, false, false)"
+		sql = "INSERT INTO games (id, number, created_at, updated_at, won, finished, guesses, guess_count) VALUES (:id, :number, :createdAt, :updatedAt, false, false, :guesses, :guessCount)"
 	} else {
 		sql = "UPDATE games set updated_at = :updatedAt, guesses = :guesses, guess_count = :guessCount, won = :won, finished = :finished WHERE id = :id"
 	}

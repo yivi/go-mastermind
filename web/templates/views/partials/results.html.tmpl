@@ -1,0 +1,19 @@
+{{ define "guessOutput" }}
+    {{ $won := .Game.Won }}
+    <div id="guessing-results">
+        {{ if $won }}
+            <span>Victory!</span>
+        {{ else if .Game.Finished }}
+            <span>Game Over: The correct number was {{ .Game.Number }} </span>
+        {{ end }}
+        {{ range $i, $g := .Game.GetLifoGuesses }}
+            {{ if and (eq $i 0) $won }}
+                <p>{{ $g.Number }} | 🟢🟢🟢🟢 🎉 </p>
+            {{else}}
+                <p>{{ $g.Number }} | ( {{ $g.Good }}🟢 {{ $g.Regular }}🟡 ) </p>
+            {{ end }}
+        {{ else }}
+            <p class="no-results">Haven't started playing yet</p>
+        {{ end }}
+    </div>
+{{ end }}

@@ -2,22 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/rs/xid"
 	"githug.com/yivi/go-mastermind/lib"
 	"strings"
 )
 
-var config lib.Config
-var container lib.Container
+var game *lib.Game
 
 func main() {
 
-	config.Init(false)
-	container.Config = &config
+	lib.Cf.Initialize(false)
+	lib.Cn.Config = &lib.Cf
 
-	gameRepository := container.GetGameRepository()
-
-	var game lib.Game
+	gameRepository := lib.Cn.GetGameRepository()
 
 	fmt.Println("Welcome to MasterMind Go!")
 	fmt.Println("Match your wits against the unconquerable computer.")
@@ -28,7 +24,7 @@ func main() {
 		gameId := readInput()
 
 		if gameId != "" {
-			getGameErr := gameRepository.GetGameById(&game, gameId)
+			getGameErr := gameRepository.GetGameById(game, gameId)
 			if getGameErr != nil {
 				fmt.Println("Error: " + getGameErr.Error())
 				continue
@@ -42,11 +38,8 @@ func main() {
 			break
 		}
 
-		game = lib.Game{
-			Id:     xid.New().String(),
-			Number: lib.Generate(),
-		}
-		err := gameRepository.AddGame(&game)
+		game = lib.NewGame()
+		err := gameRepository.AddGame(game)
 		if err != nil {
 			fmt.Println(err.Error())
 			continue
@@ -59,34 +52,34 @@ func main() {
 	fmt.Println("Cheating: " + game.Number)
 	for {
 		fmt.Print("Choose a 4 digit number:")
-		guess := readInput()
+		guessNumber := readInput()
+		guess := lib.NewGuess(guessNumber)
 
-		addGuessErr := game.AddGuess(guess)
-		if addGuessErr != nil {
+		if !guess.Validate() {
 			fmt.Println("💩 That doesn't look like a  VALID 4 digit number")
 			continue
 		}
 
-		good, regular := lib.CheckGuess(game.Number, guess)
+		game.AddGuess(guess)
 
-		g := strings.Repeat("🟩", int(good))
-		r := strings.Repeat("🟨", int(regular))
-		b := strings.Repeat("🟥", 4-int(good)-int(regular))
+		g := strings.Repeat("🟩", guess.Good)
+		r := strings.Repeat("🟨", guess.Regular)
+		b := strings.Repeat("🟥", 4-guess.Good-guess.Regular)
 
-		fmt.Printf("%s%s%s: %d Good, %d Regular\n", g, r, b, good, regular)
+		fmt.Printf("%s%s%s: %d Good, %d Regular\n", g, r, b, guess.Good, guess.Regular)
 
-		if good == 4 {
+		if guess.Good == 4 {
 			fmt.Println("You WON!!!! 🎉🎉🎉")
 			game.Won = true
 			game.Finished = true
 		}
 
 		if game.GuessCount == 9 {
-			fmt.Println("You too too long, you lose! 👎👎👎")
+			fmt.Println("You took too long, you lose! 👎👎👎")
 			game.Finished = true
 		}
 
-		addGameErr := gameRepository.AddGame(&game)
+		addGameErr := gameRepository.AddGame(game)
 		if addGameErr != nil {
 			fmt.Println("Could not save game 😢: " + addGameErr.Error())
 			continue
