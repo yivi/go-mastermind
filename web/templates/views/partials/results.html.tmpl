@@ -1,5 +1,12 @@
 {{ define "guessOutput" }}
     {{ $won := .Game.Won }}
+    {{ with .Errors }}
+        <div class="errors">
+            {{ range . }}
+                <div class="err">{{ . }}</div>
+            {{ end }}
+        </div>
+    {{ end }}
     <div id="guessing-results">
         {{ if $won }}
             <span>Victory!</span>

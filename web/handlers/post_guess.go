@@ -25,10 +25,15 @@ func PostGuess(w http.ResponseWriter, r *http.Request) {
 		guessData.Errors["guess_invalid"] = "Invalid guess."
 	} else {
 		game.AddGuess(guess)
+	}
+
+	if game.GuessCount > 0 {
 		addErr := lib.Cn.GetGameRepository().AddGame(game)
 		if addErr != nil {
 			guessData.Errors["save_err"] = "Could not save guess. Internal error."
 		}
+	} else {
+		game = &lib.Game{Id: "new"}
 	}
 
 	guessData.Game = game
