@@ -1,4 +1,4 @@
-package lib
+package types
 
 import (
 	"fmt"
@@ -8,39 +8,26 @@ import (
 
 const DateFormat = "2006-01-02 15:04:05"
 
-type RepositoryError struct {
-	message string
-	code    int
-}
-
-func (e *RepositoryError) Error() string {
-	return e.message
-}
-
-func (e *RepositoryError) GetCode() int {
-	return e.code
-}
-
-type GameRepository struct {
+type DbGameRepository struct {
 	db *sqlx.DB
 }
 
-func (r *GameRepository) GetGameById(game *Game, ID string) error {
+func (r *DbGameRepository) GetGameById(game *Game, Id string) error {
 	sql := "SELECT * FROM games WHERE id = $1"
 	statement, err := r.db.Preparex(sql)
 	if err != nil {
 		return &RepositoryError{message: fmt.Sprintf("Failed preparing statement: '%s'", sql), code: -1}
 	}
 
-	if err = statement.Get(game, ID); err != nil {
-		return &RepositoryError{message: fmt.Sprintf("Game not found: '%s'", ID), code: 404}
+	if err = statement.Get(game, Id); err != nil {
+		return &RepositoryError{message: fmt.Sprintf("Game not found: '%s'", Id), code: 404}
 	}
 
 	return nil
 
 }
 
-func (r *GameRepository) AddGame(game *Game) error {
+func (r *DbGameRepository) AddGame(game *Game) error {
 
 	var sql string
 	getGameErr := r.GetGameById(&Game{}, game.Id)
@@ -74,7 +61,7 @@ func (r *GameRepository) AddGame(game *Game) error {
 	return nil
 }
 
-func (r *GameRepository) DeleteGame(ID string) error {
+func (r *DbGameRepository) DeleteGame(ID string) error {
 	sql := "DELETE FROM games WHERE id = $1"
 
 	stmt, err := r.db.Preparex(sql)
@@ -88,4 +75,8 @@ func (r *GameRepository) DeleteGame(ID string) error {
 	}
 
 	return nil
+}
+
+func NewDbGameRepository(db *sqlx.DB) *DbGameRepository {
+	return &DbGameRepository{db: db}
 }

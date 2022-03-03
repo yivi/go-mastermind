@@ -1,26 +1,28 @@
 package handlers
 
 import (
-	"githug.com/yivi/go-mastermind/lib"
+	"fmt"
+	"github.com/yivi/go-mastermind/internal"
+	"github.com/yivi/go-mastermind/internal/types"
 	"net/http"
 )
 
 type GuessData struct {
-	Game   *lib.Game
+	Game   *types.Game
 	Errors map[string]string
 }
 
-func PostGuess(w http.ResponseWriter, r *http.Request) {
+func PostGuessHandler(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
-	game, ok := ctx.Value("game").(*lib.Game)
+	game, ok := ctx.Value("game").(*types.Game)
 	if !ok {
 		http.Error(w, http.StatusText(422), 422)
 		return
 	}
 	guessData := &GuessData{Errors: make(map[string]string)}
 
-	guess := lib.NewGuess(r.PostFormValue("guessNumber"))
+	guess := types.NewGuess(r.PostFormValue("guessNumber"))
 	if !guess.Validate() {
 		guessData.Errors["guess_invalid"] = "Invalid guess."
 	} else {
@@ -28,17 +30,17 @@ func PostGuess(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if game.GuessCount > 0 {
-		addErr := lib.Cn.GetGameRepository().AddGame(game)
+		addErr := internal.Cn.GetGameRepository().AddGame(game)
 		if addErr != nil {
 			guessData.Errors["save_err"] = "Could not save guess. Internal error."
 		}
 	} else {
-		game = &lib.Game{Id: "new"}
+		game = &types.Game{Id: "new"}
 	}
 
 	guessData.Game = game
 
 	//goland:noinspection GoUnhandledErrorResult
-	lib.Cn.GetTemplates()["index"].Execute(w, guessData)
+	http.Redirect(w, r, fmt.Sprintf("/%s", game.Id), http.StatusSeeOther)
 
 }

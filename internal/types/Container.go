@@ -1,11 +1,11 @@
-package lib
+package types
 
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"githug.com/yivi/go-mastermind/web/templates"
+	"github.com/yivi/go-mastermind/web/templates"
 	"html/template"
 )
 
@@ -16,13 +16,19 @@ const (
 )
 
 type Container struct {
-	Config         *Config
+	Config *Config
+
 	db             *sqlx.DB
-	gameRepository *GameRepository
-	templates      map[string]*template.Template
+	gameRepository GameRepositoryInterface
+
+	templates map[string]*template.Template
 }
 
-func (c *Container) GetConnection() *sqlx.DB {
+func (c *Container) GetDatabase() *sqlx.DB {
+
+	if c.Config == nil {
+		panic("Not configured")
+	}
 
 	if c.db != nil {
 		return c.db
@@ -54,12 +60,12 @@ func (c *Container) GetConnection() *sqlx.DB {
 
 }
 
-func (c *Container) GetGameRepository() *GameRepository {
+func (c *Container) GetGameRepository() GameRepositoryInterface {
 	if c.gameRepository != nil {
 		return c.gameRepository
 	}
 
-	c.gameRepository = &GameRepository{db: c.GetConnection()}
+	c.gameRepository = NewDbGameRepository(c.GetDatabase())
 
 	return c.gameRepository
 
@@ -78,6 +84,15 @@ func (c *Container) LoadTemplates() error {
 
 	var parseErr error
 	c.templates["index"], parseErr = template.ParseFS(templates.ViewsFS, templatesDir+"/base.html.tmpl", templatesDir+"/index.html.tmpl", layoutsDir+templateGlob)
+	c.templates["results"], parseErr = template.ParseFS(templates.ViewsFS, layoutsDir+"/results.html.tmpl")
+
+	//c.templates["index"] = template.Must(template.ParseFiles(templatesDir+"/base.html.tmpl", templatesDir+"/index.html.tmpl"))
+	//template.Must(c.templates["index"].ParseGlob(layoutsDir + templateGlob))
+	//c.templates["results"] = template.Must(template.ParseFiles(layoutsDir + "/results.html.tmpl"))
 
 	return parseErr
+}
+
+func NewContainer(conf *Config) *Container {
+	return &Container{Config: conf}
 }

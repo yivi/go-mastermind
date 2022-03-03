@@ -1,4 +1,4 @@
-package lib
+package types
 
 import (
 	"fmt"
@@ -14,7 +14,10 @@ type Config struct {
 	WebPort int
 }
 
-func (config *Config) Initialize(requireLoadingFile bool) {
+func NewConfig(requireLoadingFile bool) *Config {
+
+	config := &Config{}
+
 	viper.SetDefault("db_host", "localhost")
 	viper.SetDefault("db_port", 12790)
 	viper.SetDefault("db_user", "superuser")
@@ -37,4 +40,6 @@ func (config *Config) Initialize(requireLoadingFile bool) {
 	config.DbPort = viper.Get("db_port").(int)
 
 	config.WebPort = viper.Get("web_port").(int)
+
+	return config
 }

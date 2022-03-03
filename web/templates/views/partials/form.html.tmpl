@@ -1,6 +1,6 @@
 {{ define "guessInput" }}
 <div id="guess-input">
-  <form action="/{{ or .Game.Id "new" }}" method="post">
+  <form action="/{{ or .Game.Id "new" }}" method="post" target="_top">
     <input aria-label="Your Guess" id="guess" type="text" name="guessNumber" size="4" maxlength="4" placeholder="1234"/>
     <button type="submit">Guess!</button>
   </form>

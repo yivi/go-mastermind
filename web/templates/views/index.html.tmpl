@@ -1,8 +1,11 @@
 {{ define "body" }}
-    <turbo-frame id="guessInput">
-        {{ block "guessInput" .}}{{ end }}
-    </turbo-frame>
-    <turbo-frame id="guessOutput">
-        {{ block "guessOutput" .}}{{ end }}
-    </turbo-frame>
+    <section class="section">
+        <div class="container">
+            {{ block "guessInput" .}}{{ end }}
+            <turbo-frame id="guessOutput">
+                {{ block "guessOutput" .}}{{ end }}
+            </turbo-frame>
+        </div>
+    </section>
+
 {{ end }}

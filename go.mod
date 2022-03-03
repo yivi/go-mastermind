@@ -1,4 +1,4 @@
-module githug.com/yivi/go-mastermind
+module github.com/yivi/go-mastermind
 
 go 1.17
 

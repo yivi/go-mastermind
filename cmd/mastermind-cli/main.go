@@ -2,18 +2,21 @@ package main
 
 import (
 	"fmt"
-	"githug.com/yivi/go-mastermind/lib"
+	"github.com/yivi/go-mastermind/internal"
+	"github.com/yivi/go-mastermind/internal/types"
 	"strings"
 )
 
-var game *lib.Game
+var game *types.Game
+
+func init() {
+	internal.Cf = types.NewConfig(false)
+	internal.Cn = types.NewContainer(internal.Cf)
+}
 
 func main() {
 
-	lib.Cf.Initialize(false)
-	lib.Cn.Config = &lib.Cf
-
-	gameRepository := lib.Cn.GetGameRepository()
+	gameRepository := internal.Cn.GetGameRepository()
 
 	fmt.Println("Welcome to MasterMind Go!")
 	fmt.Println("Match your wits against the unconquerable computer.")
@@ -38,7 +41,7 @@ func main() {
 			break
 		}
 
-		game = lib.NewGame()
+		game = types.NewGame()
 		err := gameRepository.AddGame(game)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -53,7 +56,7 @@ func main() {
 	for {
 		fmt.Print("Choose a 4 digit number:")
 		guessNumber := readInput()
-		guess := lib.NewGuess(guessNumber)
+		guess := types.NewGuess(guessNumber)
 
 		if !guess.Validate() {
 			fmt.Println("💩 That doesn't look like a  VALID 4 digit number")
